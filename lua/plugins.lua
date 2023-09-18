@@ -1,4 +1,4 @@
-local lazypath = vim.fn.stdpath'data' .. '/lazy/lazy.nvim'
+local lazypath=vim.fn.stdpath'data' .. '/lazy/lazy.nvim'
 if not vim.loop.fs_stat(lazypath) then
 	vim.fn.system({
 		'git',
@@ -11,39 +11,15 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 require'lazy'.setup{
-	{
-		'ellisonleao/gruvbox.nvim', config=function()
-			vim.o.termguicolors=true
-			vim.cmd.colorscheme'gruvbox'
-		end
-	},
-	{import = 'plugins.lualine'},
 	'kyazdani42/nvim-web-devicons',
 	'tpope/vim-fugitive',
 	{'nvim-treesitter/nvim-treesitter', build=':TSUpdate' },
-	{
-		'masukomi/vim-markdown-folding',
-		ft='md',
-		init=function()
-			vim.cmd'set foldexpr=NestedMarkdownFolds()'
-		end
-	},
 	'anuvyklack/pretty-fold.nvim',
-	{import = 'plugins.firenvim'},
 	'chikamichi/mediawiki.vim',
 	'nvim-lua/plenary.nvim',
 	'junegunn/fzf',
 	'junegunn/fzf.vim',
-	{import = 'plugins.telescope'},
 	-- 	'serenevoid/kiwi.nvim',
-	{import = 'plugins.vimwiki'},
-	{
-		'folke/zen-mode.nvim',
-		config=function()
-			vim.keymap.set('n', '<C-G>', function() require'zen-mode'.toggle{window={width=90}} end)
-		end
-	},
-	{import = 'plugins.lsp'},
 	-- 	'hrsh7th/nvim-cmp',
 	{
 		'kevinhwang91/rnvimr',
@@ -72,10 +48,10 @@ require'lazy'.setup{
 			require'spider'.setup{skipInsignificantPunctuation=true}
 		end,
 		init=function()
-			vim.keymap.set({'n', 'o', 'x'}, 'w', function() require'spider'.motion'w' end, { desc = 'Spider-w' })
-			vim.keymap.set({'n', 'o', 'x'}, 'e', function() require'spider'.motion'e' end, { desc = 'Spider-e' })
-			vim.keymap.set({'n', 'o', 'x'}, 'b', function() require'spider'.motion'b' end, { desc = 'Spider-b' })
-			vim.keymap.set({'n', 'o', 'x'}, 'ge',function() require'spider'.motion'ge'end, { desc = 'Spider-ge' })
+			vim.keymap.set({'n', 'o', 'x'}, 'w', function() require'spider'.motion'w' end, { desc='Spider-w' })
+			vim.keymap.set({'n', 'o', 'x'}, 'e', function() require'spider'.motion'e' end, { desc='Spider-e' })
+			vim.keymap.set({'n', 'o', 'x'}, 'b', function() require'spider'.motion'b' end, { desc='Spider-b' })
+			vim.keymap.set({'n', 'o', 'x'}, 'ge',function() require'spider'.motion'ge'end, { desc='Spider-ge' })
 		end
 	},
 	'danilamihailov/vim-tips-wiki',
@@ -90,14 +66,55 @@ require'lazy'.setup{
 				start_in_insert=true,
 				persist_mode=true,
 				open_mapping='<C-t>',
-				direction = 'float',
+				direction='float',
 			}
 		end,
 		keys='<C-T>'
 	},
+	'stevearc/dressing.nvim',
 	{
-		'stevearc/dressing.nvim',
-		opts = {},
+		'rcarriga/nvim-notify',
+		init=function()
+			vim.notify=require'notify'
+			vim.keymap.set('n', '<leader>n', require'notify'.dismiss, {desc='dismiss notifications'})
+		end
 	},
-	{import = 'plugins.mini'},
+	{
+		'junegunn/limelight.vim',
+		config=function()
+		end
+	},
+	{
+		'preservim/vim-markdown',
+		dependencies={'godlygeek/tabular'}
+	},
+	{
+		'williamboman/mason.nvim',
+		init=function()
+			require'mason'.setup{}
+		end
+	},
+	{
+		'https://github.com/sQVe/sort.nvim',
+	},
+	{ import='plugins.tmux' },
+	{ import='plugins.lsp'},
+	{ import='plugins.colorscheme' },
+	{ import='plugins.lualine' },
+	{ import='plugins.firenvim' },
+	{ import='plugins.telescope' },
+	{ import='plugins.mini' },
+	{ import='plugins.zen' },
+	{ import='plugins.wiki' },
+	-- { import='plugins.dap' },
 }
+
+local diary = require'plugins.diary'
+diary.setup{
+	path='~/writing/diary',
+	file_extension='md',
+	template_path='~/writing/diary/template.md',
+}
+vim.keymap.set('n', '<leader>w<leader>w', diary.open_diary_new, {desc='Open diary for today'})
+vim.keymap.set('n', '<leader>w<leader>t', function() vim.cmd.tabnew() diary.open_diary_new() end, {desc='Open diary in new tab'})
+vim.keymap.set('n', '<leader>w<leader>i', diary.open_diary_index, {desc='Open diary index'})

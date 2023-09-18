@@ -1,10 +1,14 @@
 return {
+	{
 		'neovim/nvim-lspconfig',
 		init=function()
 			local lspconfig = require'lspconfig'
-			lspconfig.pyright.setup {}
-			lspconfig.clangd.setup {}
-			lspconfig.lua_ls.setup {
+			lspconfig.asm_lsp.setup{}
+			lspconfig.awk_ls.setup{}
+			lspconfig.clangd.setup{}
+			lspconfig.cssls.setup{}
+			-- lspconfig.ltex.setup{settings={ltex={language='en_US'}}}
+			lspconfig.lua_ls.setup{
 				settings = {
 					Lua = {
 						runtime = {
@@ -21,35 +25,54 @@ return {
 							checkThirdParty = false
 						},
 						-- Do not send telemetry data containing a randomized but unique identifier
-						telemetry = {
-							enable = false,
-						},
+						telemetry = { enable = false, },
 					},
 				}
 			}
-			-- lspconfig.marksman.setup{}
-			-- lspconfig.asm_lsp.setup{}
+			-- lspconfig.marksman.setup{filetype={'markdown', 'vimwiki.markdown'}}
+			-- lspconfig.proselint.setup{}
+			lspconfig.pylsp.setup{}
+			lspconfig.pyright.setup{}
+			lspconfig.rust_analyzer.setup{}
+			-- lspconfig.textlint.setup{}
+			lspconfig.tsserver.setup{}
+			lspconfig.vuels.setup{}
+
 		end,
 		config=function()
 			vim.keymap.set('n', '<leader>le', vim.diagnostic.open_float, {desc='diagnostics cur line'})
 			vim.keymap.set('n', '[d', vim.diagnostic.goto_prev)
 			vim.keymap.set('n', ']d', vim.diagnostic.goto_next)
 			vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, {desc='diagnostics'})
-
-			-- Enable completion triggered by <c-x><c-o>
-			-- vim.bo[env.buf].omnifunc = 'v:lua.vim.lsp.omnifunc'
-			-- Buffer local mappings.
-			-- Buffer local mappings.
-			-- See `:help vim.lsp.*` for documentation on any of the below functions
-			-- local opts = { buffer = env.buf }
 			vim.keymap.set('n', '<leader>ld', vim.lsp.buf.definition,{desc='definition'})
+			vim.keymap.set('n', '<leader>li', vim.lsp.buf.implementation,{desc='implementation'})
+			vim.keymap.set('n', '<leader>lt', vim.lsp.buf.type_definition,{desc='type definition'})
 			vim.keymap.set('n', '<leader>K', vim.lsp.buf.hover, {desc='display info about symbol'})
 			vim.keymap.set('n', '<leader>li', vim.lsp.buf.implementation, {desc='implementation'})
 			vim.keymap.set('n', '<leader>ln', vim.lsp.buf.rename, {desc='rename'})
-			-- vim.keymap.set({ 'n', 'v' }, '<leader>ca', vim.lsp.buf.code_action, opts)
 			vim.keymap.set('n', '<leader>lr', vim.lsp.buf.references, {desc='references'})
 			vim.keymap.set('n', '<leader>lf', function()
 				vim.lsp.buf.format { async = true }
 			end, {desc='format'})
+		end,
+		dependencies={'williamboman/mason-lspconfig.nvim', 'williamboman/mason.nvim', }
+	},
+	{
+		'williamboman/mason-lspconfig.nvim',
+		init=function()
+			require'mason-lspconfig'.setup{}
+		end,
+		dependencies={'williamboman/mason.nvim'}
+	},
+	{
+		'weilbith/nvim-code-action-menu',
+		config=function()
+			vim.keymap.set(
+			'n',
+			'<leader>la',
+			require'code_action_menu'.open_code_action_menu,
+			{desc='code actions'}
+			)
 		end
-	}
+	},
+}
